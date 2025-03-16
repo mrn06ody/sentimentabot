@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>51d83a82-cbc0-4dbb-8340-d5a513e21191</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="WTelegramBot" Version="8.3.1" />
+    <PackageReference Include="WTelegramClient" Version="4.3.2" />
+  </ItemGroup>
+
+</Project>
