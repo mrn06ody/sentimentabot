@@ -1,5 +1,7 @@
 ﻿{
-    "ApiId": 0,
-    "ApiHash": "xxx",
-    "BotToken": "xxx"
+  "ApiId": 0,
+  "ApiHash": "xxx",
+  "PhoneNumber": "xxx",
+  "Password": "xxx",
+  "BotToken": "xxx"
 }
