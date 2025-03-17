@@ -21,8 +21,6 @@ WTelegram.Helpers.Log = (lvl, str) => WTelegramLogs.WriteLine($"{DateTime.Now:yy
 
 using var connection = new Microsoft.Data.Sqlite.SqliteConnection(@"Data Source=WTelegramBot.sqlite");
 using var bot = new WTelegram.Bot(Config, connection);
-//          use new WTelegramBotClient(...) instead, if you want the power of WTelegram with Telegram.Bot compatibility for existing code
-//          use new TelegramBotClient(...)  instead, if you just want Telegram.Bot classic code
 var my = await bot.GetMe();
 Console.WriteLine($"I am @{my.Username}");
 
@@ -50,11 +48,11 @@ async Task OnMessage(WTelegram.Types.Message msg, UpdateType type)
 
     try
     {
-        var myself = await bot.Client.LoginUserIfNeeded();
-        Console.WriteLine($"We are logged-in as {myself} (id {myself.id})");
-        var chats = await bot.Client.Messages_GetAllChats();
-        var chat = await bot.Client.Messages_GetChats(originChannel.Chat.Id);
-        var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats.First().Value, msg.TLMessage.ID);
+        await bot.Client.LoginUserIfNeeded();
+
+        var chatId = long.Parse(originChannel.Chat.Id.ToString().Replace("-100", string.Empty));
+        var chat = await bot.Client.Messages_GetChats(chatId);
+        var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats[chatId], msg.TLMessage.ID);
     }
     catch (Exception)
     {
