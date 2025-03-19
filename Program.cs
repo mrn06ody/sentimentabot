@@ -32,10 +32,8 @@ while (Console.ReadKey(true).Key != ConsoleKey.Escape) { }
 
 async Task OnMessage(WTelegram.Types.Message msg, UpdateType type)
 {
-    // commands accepted:
     if (msg.Text == "/start")
     {
-        //---> It's easy to reply to a message by giving its id to replyParameters: (was broken in Telegram.Bot v20.0.0)
         await bot.SendMessage(msg.Chat, $"Hello, {msg.From}!\nTry commands /pic /react /lastseen /getchat /setphoto", replyParameters: msg);
         return;
     }
@@ -48,11 +46,18 @@ async Task OnMessage(WTelegram.Types.Message msg, UpdateType type)
 
     try
     {
-        await bot.Client.LoginUserIfNeeded();
+        var test = await bot.GetChat($"@{originChannel.Chat.Username}");
+        var tes2 = await bot.GetMessagesById($"@{originChannel.Chat.Username}", [originChannel.MessageId]);
 
-        var chatId = long.Parse(originChannel.Chat.Id.ToString().Replace("-100", string.Empty));
-        var chat = await bot.Client.Messages_GetChats(chatId);
-        var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats[chatId], msg.TLMessage.ID);
+        var channel = originChannel.Chat.TLInfo() as TL.Channel;
+        var peer = channel.ToInputPeer();
+
+        var tes3 = await bot.Client.Messages_GetReplies(peer, originChannel.MessageId);
+
+        var chats = await bot.Client.Messages_GetAllChats();
+        //var chat = await bot.Client.Messages_GetChats(chatId);
+        //var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats[chatId], msg.TLMessage.ID);
+        var test3 = await bot.Client.Messages_GetReplies(chats.chats[1], msg.TLMessage.ID);
     }
     catch (Exception)
     {
