@@ -24,11 +24,15 @@ using var bot = new WTelegram.Bot(Config, connection);
 var my = await bot.GetMe();
 Console.WriteLine($"I am @{my.Username}");
 
+//bot.Client.OnUpdates += (test) =>
+//{
+//    return Task.CompletedTask;
+//};
+
 bot.WantUnknownTLUpdates = true;
 bot.OnError += (e, s) => Console.Error.WriteLineAsync(e.ToString());
 bot.OnMessage += OnMessage;
 while (Console.ReadKey(true).Key != ConsoleKey.Escape) { }
-
 
 async Task OnMessage(WTelegram.Types.Message message, UpdateType type)
 {
@@ -46,18 +50,42 @@ async Task OnMessage(WTelegram.Types.Message message, UpdateType type)
 
     try
     {
-        var test = await bot.GetChat($"@{originChannel.Chat.Username}");
-        var tes2 = await bot.GetMessagesById($"@{originChannel.Chat.Username}", [originChannel.MessageId]);
+        //var test = await bot.GetChat($"@{originChannel.Chat.Username}");
+        //var tes2 = await bot.GetMessagesById($"@{originChannel.Chat.Username}", [originChannel.MessageId]);
 
-        var channel = originChannel.Chat.TLInfo() as TL.Channel;
-        var peer = channel.ToInputPeer();
+        await bot.Client.LoginUserIfNeeded();
+        var channel = await bot.Client.Contacts_ResolveUsername(originChannel.Chat.Username);
 
-        var tes3 = await bot.Client.Messages_GetReplies(peer, originChannel.MessageId);
+        //var channel = originChannel.Chat.TLInfo() as Channel;
+        //var chats = await bot.Client.Messages_GetAllChats();
+        //if (!chats.chats.ContainsKey(channel.ID))
+        //{
+        //    await bot.Client.Channels_JoinChannel(channel);
+        //}
 
-        var chats = await bot.Client.Messages_GetAllChats();
-        //var chat = await bot.Client.Messages_GetChats(chatId);
-        //var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats[chatId], msg.TLMessage.ID);
-        var test3 = await bot.Client.Messages_GetReplies(chats.chats[1], message.TLMessage.ID);
+        //var peer = chats.chats[channel!.ID]; // the chat (or User) we want
+
+        //var messages = await bot.Client.Messages_GetHistory(peer, 0);
+
+        var minId = 0;
+        var replies = new List<MessageBase>();
+        while (true)
+        {
+            var test3 = await bot.Client.Messages_GetReplies(channel, originChannel.MessageId, add_offset: int.MaxValue);
+            replies.AddRange(test3.Messages);
+
+            if (test3.Count < 100)
+            {
+                break;
+            }
+
+            minId = test3.Messages[^1].ID;
+        }
+
+        //var chats = await bot.Client.Messages_GetAllChats();
+        ////var chat = await bot.Client.Messages_GetChats(chatId);
+        ////var test = await bot.Client.Messages_GetDiscussionMessage(chat.chats[chatId], msg.TLMessage.ID);
+        //var test3 = await bot.Client.Messages_GetReplies(chats.chats[1], message.TLMessage.ID);
     }
     catch (Exception)
     {
@@ -106,3 +134,14 @@ string? Config(string what)
         default: return null; // let WTelegramClient decide the default config
     }
 }
+
+//static Task HandleMessage(MessageBase messageBase, bool edit = false)
+//{
+//    if (edit) Console.Write("(Edit): ");
+//    switch (messageBase)
+//    {
+//        case TL.Message m: Console.WriteLine($"{Peer(m.from_id) ?? m.post_author} in {Peer(m.peer_id)}> {m.message}"); break;
+//        case MessageService ms: Console.WriteLine($"{Peer(ms.from_id)} in {Peer(ms.peer_id)} [{ms.action.GetType().Name[13..]}]"); break;
+//    }
+//    return Task.CompletedTask;
+//}
